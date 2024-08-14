@@ -1,248 +1,395 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
+import 'package:untitled2/login_route.dart';
+import 'package:untitled2/splashScreen_route.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math';
+import 'dart:ui';
+import 'package:checkbox_grouped/checkbox_grouped.dart';
+import 'package:flutter/animation.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:roundcheckbox/roundcheckbox.dart';
+import 'package:google_fonts/google_fonts.dart';
+void main() {
+  runApp(const MaterialApp(home: splash_route(),debugShowCheckedModeBanner: false,));
 
-void main(){
-  runApp(const MaterialApp(home: loginActivity(),));
 }
-class loginActivity extends StatefulWidget {
-  const loginActivity({super.key});
 
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+
+  
+  static TabController? tabController;
+  TextEditingController inputTextAppBar = new TextEditingController();
+  
 
 
   @override
-  State<loginActivity> createState() => _loginActivityState();
-}
+  void initState() {
+    // TODO: implement initState
 
 
 
 
 
 
+    super.initState();
+  }
 
-class _loginActivityState extends State<loginActivity> {
 
+  @override
+  void dispose() {
+    super.dispose();
+
+    tabController?.dispose();
+  }
 
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
+    
+        return FutureBuilder<SharedPreferences>(
+            future: SharedPreferences.getInstance(),
+            builder: (context , snapshot){
+              if(snapshot.hasData){
 
-      //background color Activity
-      backgroundColor: Color.fromRGBO(7, 7, 7, 1),
+                SharedPreferences preferences = snapshot.data!;
 
-      appBar: AppBar(
-
-        backgroundColor: Color.fromRGBO(7, 7, 7, 1),
-        foregroundColor: Colors.grey,
-        leading: IconButton(
-          icon : Icon(Icons.arrow_back),
-          color: Colors.white,
-          onPressed: (){},
-          padding:EdgeInsets.symmetric(horizontal: 20,vertical: 5),
-          hoverColor: Color.fromRGBO(32, 32, 32,1),),
-        surfaceTintColor:Color.fromRGBO(32, 32, 32,1),
-      ),
-
-
-      body:SingleChildScrollView(child: Center(
-        child:Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-           child:Column(
-
-        crossAxisAlignment: CrossAxisAlignment.start,
-
-        children:
-        [
-
-          //txtLog in to Scale
-          Container(
-            child:Text("Log in to Scale",textAlign: TextAlign.left,style: TextStyle(color: Color(0Xffffffff),fontSize: 50),),
-            margin: EdgeInsets.symmetric(vertical: 15,horizontal: 0),
-
-         ),
-
-          //txtEmail
-          Container(
-             child: Text("Email",style: TextStyle(color: Colors.white,fontSize: 20)),
-             margin: EdgeInsets.only(top: 20,right: 0,left: 0,bottom: 0),
-
-
-         ),
-
-          //Input Email
-          Container(margin: EdgeInsets.only(bottom:30,left: 0,right: 0,top: 0),
-            child:TextField(
-              style: TextStyle(color: Colors.white),
-
-              //Text Decoration
-              decoration: InputDecoration(
-              labelStyle:const TextStyle(fontFamily: 'monospace'),
-              contentPadding: EdgeInsets.symmetric(horizontal: 10,vertical:15),
-              fillColor: Color.fromRGBO(7, 7, 7, 1),
-              filled: true,
-              hintText: "hello@company.com",
-              hintStyle: TextStyle(color: Colors.grey),
-              //border: InputBorder.none,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),borderSide: BorderSide(color: Colors.white) )
-
-            ),
-
-            ),
-          ),
-
-          //txtPassword
-          Container(
-            child:  Text("Password",style: TextStyle(color: Colors.white,fontSize: 20,),),
-              margin: EdgeInsets.only(top: 0,right: 0,left: 0,bottom: 0),
-
-
-              ),
-
-          //Input password
-          Container(margin: EdgeInsets.only(bottom: 40,left: 0,right: 0,top: 0),
-            child: TextField(
-
-                style: TextStyle(color: Colors.white),
-                keyboardType: TextInputType.visiblePassword,
-
-                //Text Decoration
-                decoration: InputDecoration(
-
-                  suffix: Icon(Icons.remove_red_eye,color: Colors.white,),
-                  labelStyle:  TextStyle(fontFamily: 'monospace'),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 10,vertical: 15),
-                  fillColor: Color.fromARGB(7, 7, 7, 1),
-                  filled: true,
-                  hintText: "Your password",
-                  hintStyle: TextStyle(color: Colors.grey),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),borderSide: BorderSide(color: Colors.white)),
+                bool? islogged = preferences.getBool('isLogged') ?? false;
+                if(islogged){
+                   return mainWrapper();
+                }else{
+                   return login_route();
+                }
+              }else{
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }
+        );
 
 
 
-                ),
+    }
 
 
 
-              ),
-          ),
+    Widget mainWrapper(){
+      return DefaultTabController(
 
-          //txtButton_ForgotPass
-          Container(
-            margin: EdgeInsets.only(top: 0,right: 0,left: 0,bottom: 20),
-            child:TextButton(
-              onPressed: (){},
-              child: Text("Forgot Password?",style:TextStyle(
-                color: Colors.green,fontSize: 20),),)
-
-        ,),
+        length: 2,
+        child: Scaffold(
+          backgroundColor: bgColor(),
 
 
-          //btnLogin
-          Container(
-            alignment: Alignment.center,
-              margin: EdgeInsets.only(bottom: 20,left: 0,right: 0,top: 0),
-
-              child: SizedBox(width: double.infinity,height:60,
-                child: ElevatedButton(
-                onPressed: (){},
-                child: Text("Login",),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  padding: EdgeInsets.only(top: 20,right: 150,left: 150,bottom: 20),
-                  shape:RoundedRectangleBorder(borderRadius:BorderRadius.circular(8),side: BorderSide(color: Colors.white)),
-                  foregroundColor: Colors.black,
-                  textStyle: TextStyle(fontSize: 20,decoration: TextDecoration.none),
-
-                ),
+          appBar: _appBar(),
 
 
-
-            ),
-              ),
-          ),
-
-
-          //Divider
-          Row(
+          body: TabBarView(
+            controller: tabController,
             children: [
-              Expanded(child: Divider(color: Colors.grey,)),
-              Container(margin: EdgeInsets.all(3),child: Text("OR",style: TextStyle(color: Colors.grey),))
-             ,
-              Expanded(child: Divider(color: Colors.grey,)),
+              fragment_All(),
+              fragment_Folder(),
             ],
           ),
 
-          //Btn_Apple
-          Container(
-            margin: EdgeInsets.only(bottom: 20,top: 20,left: 0,right: 0),
-            child:  ElevatedButton(
-              onPressed: (){},
-              child: Text("Continue With Apple"),
-              style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.transparent,
-              minimumSize: Size(double.infinity, 60),
-              shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),side: BorderSide(color : Colors.white,)),
+        ),
 
-              ),
+      );
+    }
 
 
-                   ),
-            ),
+    Color bgColor() {
+      return Color.fromARGB(100, 30, 33, 36);
+    }
+    PreferredSize _appBar() {
+      return PreferredSize(preferredSize: Size.fromHeight(175),
+        child: Container(
+          margin: EdgeInsets.only(top: 20,),
+          color: bgColor(),
+          // decoration: _boxDecoration(),
+          child: Column(
+            children: [
+              SizedBox(height: 5,),
+              _topBar(),
+              _searchBar(),
 
-          //Btn_Google
-          Container(
-            margin: EdgeInsets.only(bottom: 20,top: 0,left: 0,right: 0),
-            child:  ElevatedButton.icon(
-              onPressed: (){},
-              //icon : new Image.asset('assetfolder/icon-google.png'),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.transparent,
-                minimumSize: Size(double.infinity, 60),
-                shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),side: BorderSide(color : Colors.white,)),
+              _bottomAppBar()
 
-              ), label: Text("Continue With Google"),
-            ),
+            ],
+          ),
+        ),
+      );
+    }
+    Widget _topBar() {
+      return Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+
+              Container(margin: EdgeInsets.only(left: 12,),
+                  child: Text("Cold NOTE", style: TextStyle(
+                      color: Colors.white, fontSize: 30, fontFamily: GoogleFonts.lexend()
+                      .fontFamily))),
+              Expanded(child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5, right: 5),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.compare_arrows,
+                        size: 40,
+                      ),
+                      color: Colors.white,
+                      onPressed: () {},
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5, right: 5),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.menu,
+                        size: 40,
+                      ),
+                      color: Colors.white,
+                      onPressed: () {},
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5, right: 5),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.settings,
+                        size: 40,
+                      ),
+                      color: Colors.white,
+                      onPressed: () {},
+                    ),
+                  ),
+
+                ],
+              )),
+
+            ],
           ),
 
-
-
-
-          //TextEndActicity
-          Container(
-            alignment: Alignment.center,
-            margin: EdgeInsets.symmetric(vertical: 10,horizontal: 0),
-            child: Text("Scale uses cookies for analytcs personalized\n"
-              "content and ads. By using Scale's servies you\n agree to this use of cookies.Learn more ",style: TextStyle(
-              color:Colors.grey
-            ),),
-          )
-
-        ],//children
-      ),
-      ),
-      ),
-
-      ),
-
-
-
-
-    ),
-    );
-
+        ],
+      );
+    }
+    Widget _searchBar() {
+      return Row(
+        children: [
+          Expanded(
+              child: Container(
+                margin:
+                EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+                child: TextField(
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontStyle: FontStyle.normal,
+                  fontFamily: GoogleFonts.lexend().fontFamily),
+                  cursorColor: Colors.white,
+                  decoration: InputDecoration(
+                      hintText: "Search",
+                      hintStyle: TextStyle(
+                          color: Color.fromARGB(100, 200, 200, 200),
+                          fontSize: 16),
+                      contentPadding:
+                      EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      prefixIcon: Container(
+                        margin: EdgeInsets.only(
+                            top: 3, bottom: 3, left: 0, right: 0),
+                        child: Icon(
+                          Icons.search,
+                          color: Colors.grey,
+                          size: 30,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Color.fromARGB(100, 80, 80, 80),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      )),
+                ),
+              ))
+        ],
+      );
+    }
+    Widget _bottomAppBar() {
+      return TabBar(
+        controller: tabController,
+        labelColor: Colors.blueAccent,
+        dividerColor: bgColor(),
+        indicatorColor: Colors.blueAccent,
+        tabs: [
+          Tab(
+            text: "All",
+          ),
+          Tab(text: "Folder"),
+        ],
+        labelStyle: TextStyle(
+          fontSize: 25,
+          color: Colors.blueAccent,
+          fontWeight: FontWeight.w500,
+        ),
+      );
+    }
   }
 
 
 
 
+   class fragment_All extends StatefulWidget {
+   @override
+   State<fragment_All> createState() => _fragment_AllState();
+   }
 
-}
+   class _fragment_AllState extends State<fragment_All> {
+
+     GroupController controller = GroupController();
+
+     bool value = false;
+
+
+     @override
+     Widget build(BuildContext context) {
+       return Scaffold(
+           backgroundColor: Color.fromARGB(100, 50, 53, 56),
+           body: MasonryGridView.builder(itemCount: 6,
+             gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                 crossAxisCount: 2), itemBuilder: (context, index) =>
+                 Padding(
+                   padding: const EdgeInsets.all(10.0),
+                   child: Container(
+                     decoration: BoxDecoration(
+                         borderRadius: BorderRadius.circular(18),
+                         border: Border.all(color: Colors.black12),
+                         color: Color.fromARGB(100, 70, 70, 70)),
+
+
+                     // height: 200,
+                     child: Padding(
+                       padding: const EdgeInsets.all(10.0),
+                       child: Column(
+
+                           children: [
+
+                             Row(
+                               mainAxisAlignment: MainAxisAlignment.start,
+                               crossAxisAlignment: CrossAxisAlignment.center,
+                               children: [
+                                 Text(
+                                   "Today Work", style: TextStyle(color: Colors
+                                     .white, fontSize: 15),),
+                                 Expanded(child: Icon(
+                                   Icons.flag_outlined, color: Colors.white,)),
+                               ],
+                             ),
+
+                             Row(
+                               crossAxisAlignment: CrossAxisAlignment.start,
+                               mainAxisAlignment: MainAxisAlignment.start,
+                               children: [
+
+
+                                 Transform.rotate(angle: 180 * pi / 180,
+                                     child: Icon(
+                                       Icons.turn_slight_left, color: Colors
+                                         .white,)),
+
+                                 Padding(
+                                   padding: EdgeInsets.only(top: 5, left: 10),
+                                   child: Text("folder 2", style: TextStyle(
+                                       color: Colors.yellowAccent),),)
+                               ],
+                             ),
+
+
+
+                             // ...notifications.map(BuildingSingleCheckBox).toList()
+
+
+                           ]
+                       ),
+                     ),
+                   ),
+
+                 ),
+
+
+           ));
+     }
+
+     Widget _buildCard() =>
+         Card(
+           margin: EdgeInsets.zero,
+           shape: RoundedRectangleBorder(
+               borderRadius: BorderRadius.circular(8)),
+           child: Container(
+             margin: EdgeInsets.all(8),
+             child: ClipRRect(
+               borderRadius: BorderRadius.circular(8),
+               child: ListView.builder(itemBuilder: (context, index) {
+
+               },),
+             ),
+           ),
+         );
+
+
+// Widget BuildingSingleCheckBox(NotificationSetting notification) => customcheckbox(
+//   notification: notification,
+//   onClicked: () {setState(() {
+//     final newvalue = !notification.value;
+//     notification.value = newvalue;
+//   });}
+// );
+//
+// Widget customcheckbox({required VoidCallback onClicked,required NotificationSetting notification }) =>ListTile(
+//
+//   onTap: onClicked,
+//   leading: Checkbox(
+//     value: value,
+//     onChanged: (value) => onClicked),title: Text(
+//  notification.title,
+//    style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+// ),);
+//
+//
+
+
+   }
+
+   class fragment_Folder extends StatefulWidget {
+   @override
+   State<fragment_Folder> createState() => _fragment_FolderState();
+   }
+
+   class _fragment_FolderState extends State<fragment_Folder> {
+   @override
+   Widget build(BuildContext context) {
+   return Scaffold(
+   backgroundColor: Color.fromARGB(100, 50, 53, 56),
+   body: Text(""),
+   );
+   }
+   }
+
 
 
